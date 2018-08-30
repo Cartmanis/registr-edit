@@ -46,42 +46,48 @@ api.getUsers = (User, token) => async (req, res) => {
 
 }
 
-api.createUser = (User) => (req, res) => {
-  if(!req.body.username||req.body.username.length < 3) {
-    return res.status(400).json({success: false,
-    message: 'Имя пользователя должно быть не менее 3 символов'});                
-  }
-  if(!req.body.password || req.body.password.length < 6) {
-    return res.status(400).json({success: false,
-    message: 'Пароль должен быть не менее 6 символов'});      
-  }
-  
-  const token =  auth.verify(req.headers);
-  if(!token) {
-    return res.status(401).json({success: false,
-      message: 'Пользователь не авторизован'});
-  }
-  
-  const extract = jwt.verify(token, config.secret);
-  console.log(extract);
-  if(!extract.isAdmin) {
-      return res.status(403).json({success: false,
-      message: 'Нет прав для выполнения этой операции'});
-  }
-    
-  const newUser = new User({
-      username: req.body.username,
-      password: req.body.password
-  });
-
-  newUser.save((err) => {
-      if(err) {
-          return res.status(400).json({success: false, message: 
-      `Данный пользователь уже присутсвует. Выберите другое имя пользователя`});
-      }
-      res.json({success: true, 
-      message:'Новый пользователь успешно добавлен'});
-  })
+api.createUser = (User) => async (req, res) => {
+    try{
+        if(!req.body.username||req.body.username.length < 3) {
+            return res.status(400).json({success: false,
+            message: 'Имя пользователя должно быть не менее 3 символов'});                
+          }
+          if(!req.body.password || req.body.password.length < 6) {
+            return res.status(400).json({success: false,
+            message: 'Пароль должен быть не менее 6 символов'});      
+          }
+          
+          const token =  auth.verify(req.headers);
+          console.log(token);
+          if(!token) {
+            return res.status(401).json({success: false,
+              message: 'Пользователь не авторизован'});
+          }
+          
+          const extract = jwt.verify(token, config.secret);
+          console.log(extract);
+          if(!extract.isAdmin) {
+              return res.status(403).json({success: false,
+              message: 'Нет прав для выполнения этой операции'});
+          }
+            
+          const newUser = new User({
+              username: req.body.username,
+              password: req.body.password
+          });
+        
+          newUser.save((err) => {
+              if(err) {
+                  return res.status(400).json({success: false, message: 
+              `Данный пользователь уже присутсвует. Выберите другое имя пользователя`});
+              }
+              res.json({success: true, 
+              message:'Новый пользователь успешно добавлен'});
+          })
+    } catch (err) {
+        return res.status(500).json({success: false, message: 
+            `Ошибка сервера: ${err}`});
+    }  
 }
 
 module.exports = api;
