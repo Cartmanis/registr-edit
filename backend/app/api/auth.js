@@ -9,18 +9,18 @@ api.login = (User) => async (req, res) => {
         if(!user) {
             res.status(401).send({success: false, message:
                 'Сбой авторизации: Пользователь не найден'});
-        } else {
-            comparePassword(user, req, res);
+            return;
         }
+        comparePassword(user, req, res);
     } catch (err) {
         res.status(500).send({success: false, message: 
         `Ошибка сервера при поиске пользователя: ${err}`});
     }
 }
 
-api.veify = (headers) => {
-    if(headers && headers.autorization) {
-        const arr = headers.autorization.split(' ');
+api.verify = (headers) => {
+    if(headers && headers.authorization) {
+        const arr = headers.authorization.split(' ');
         if(arr.length === 2){
             return arr[1];
         }
@@ -32,11 +32,15 @@ api.veify = (headers) => {
 //Вспомогательные функции
 const comparePassword = async (user, req, res) => {
     try {
-        const result = await user.comparePassword(req.body.password);
-
-        if(result) {
-            //формируем токен для определенного пользователя по секретному ключу
-            const token = jwt.sign({user}, config.secrect); 
+        const compare = await user.comparePassword(req.body.password);
+        if(compare) {
+            //не храним password в токене в целях безопасности, хотя он в виде хеша...
+            const payload = {
+                username: user.username,
+                isAdmin: user.isAdmin
+            }
+            //формируем токен для определенного пользователя по секретному ключу, сроком годности 24 часа
+            const token = jwt.sign(payload, config.secret, {expiresIn: 86400});                        
             res.json({success: true, message: 'Token granted', token});
         } else {
             res.status(401).send({success: false, 

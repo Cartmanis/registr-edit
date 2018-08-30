@@ -7,7 +7,7 @@ const Strategy = passportJWT.Strategy;
 module.exports = (passport) => {
     const User = models.User;
     const tokenAndSecret = {
-        secretOrKey: config.secrect,
+        secretOrKey: config.secret,
         jwtFromRequest: extractJWT.fromAuthHeaderAsBearerToken()
     };
 

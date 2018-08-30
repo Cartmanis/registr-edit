@@ -1,8 +1,8 @@
 const models = require('../setup');
-const api = require('../api/login');
+const api = require('../api/auth');
 
 
 module.exports = (app) => {    
     app.route('/').get((req, res) => res.send('Main page'));
-    app.route('/login').post(api.login(models.User));
+    app.route('/auth').post(api.login(models.User));
 }

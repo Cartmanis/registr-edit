@@ -6,6 +6,6 @@ const PORT = process.env.PORT || 3001;
 const LOCAL = '0.0.0.0';
 
 Server.listen(PORT, LOCAL, () => {
-    console.log(`Приложение успешно запущенно на порту: ${PORT}`);
+    console.log(`Приложение запущенно на порту: ${PORT}`);
 })
 

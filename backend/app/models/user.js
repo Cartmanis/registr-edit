@@ -10,10 +10,12 @@ const Schema = mongoose.Schema({
     password: {
         type: String,
         required: true
+    },
+    isAdmin: {
+        type: Boolean
     }
 });
 
-/*middleware */
 /*Не использую стрелочные функции из-за их привязки к лексической области видмости */
 Schema.pre('save', async function(next) { 
         try{   
@@ -30,11 +32,10 @@ Schema.pre('save', async function(next) {
         }    
 });
 
-//тут ошибка 
-Schema.methods.comparePassword = async function(password) {                         
+Schema.methods.comparePassword =  async function (password) {                         
         try {
-            const matches = await bcrypt.compare(password, this.password);
-            return matches;
+            const compare = await bcrypt.compare(password, this.password);
+            return compare;
         } catch (err) {
             return err;
         }    

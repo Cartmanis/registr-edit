@@ -23,7 +23,7 @@ app.use(function(req, res, next) {
   });
 app.use(passport.initialize());
 
-app.set('dU$f82kf%HL2&ll@s2#', config.secrect);
+app.set(config.secret, config.secret);
 
 consign({cwd: 'backend'})
     .include('app/setup')
